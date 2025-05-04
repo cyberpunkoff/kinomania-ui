@@ -10,7 +10,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { useMobile } from "@/hooks/use-mobile"
 
-// Обновим массив routes, убрав из него профиль, так как мы будем отображать его отдельно
 const routes = [
   {
     href: "/",
@@ -26,12 +25,7 @@ const routes = [
     href: "/collections",
     label: "Подборки",
     icon: Film,
-  },
-  // {
-  //   href: "/notifications",
-  //   label: "Уведомления",
-  //   icon: Bell,
-  // },
+  }
 ]
 
 export default function Navigation() {
@@ -39,7 +33,6 @@ export default function Navigation() {
   const [open, setOpen] = useState(false)
   const isMobile = useMobile()
 
-  // Обновим компонент NavItems, чтобы он не включал профиль
   const NavItems = () => (
     <>
       {routes.map((route) => (
@@ -56,7 +49,6 @@ export default function Navigation() {
     </>
   )
 
-  // Обновим мобильную версию навигации
   if (isMobile) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -96,7 +88,6 @@ export default function Navigation() {
     )
   }
 
-  // Обновим десктопную версию навигации
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -120,4 +111,3 @@ export default function Navigation() {
     </header>
   )
 }
-

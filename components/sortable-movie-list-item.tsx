@@ -163,4 +163,3 @@ export default function SortableMovieListItem({ item, index, isActive }: Sortabl
     </Card>
   )
 }
-

@@ -9,9 +9,8 @@ import { CollectionsProvider } from "@/lib/collections-context"
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "Киномания - Ваш список фильмов и сериалов",
-  description: "Приложение для ведения списка фильмов и сериалов для просмотра",
-    generator: 'v0.dev'
+  title: "Киномания | Фильмы и сериалы",
+  description: "Приложение для ведения списка фильмов и сериалов для просмотра"
 }
 
 export default function RootLayout({
@@ -34,4 +33,3 @@ export default function RootLayout({
     </html>
   )
 }
-

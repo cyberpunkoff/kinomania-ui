@@ -71,4 +71,3 @@ export default function DraggableMovieList({ collectionId, items }: DraggableMov
     </DndContext>
   )
 }
-

@@ -80,4 +80,3 @@ export default function CollectionSelector({ mediaId, onClose }: CollectionSelec
     </div>
   )
 }
-

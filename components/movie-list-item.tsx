@@ -123,4 +123,3 @@ export default function MovieListItem({ item }: MovieListItemProps) {
     </Card>
   )
 }
-

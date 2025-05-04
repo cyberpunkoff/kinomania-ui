@@ -20,6 +20,6 @@ export const config = {
     /*
      * Пути, которые не должны проходить через middleware
      */
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|logo).*)",
   ],
 };

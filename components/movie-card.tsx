@@ -33,7 +33,7 @@ export default function MovieCard({ item }: MovieCardProps) {
       <Link href={`/media/${item.id}`}>
         <div className="relative aspect-[2/3] overflow-hidden">
           <Image
-            src={item.poster || "/placeholder.svg"}
+            src={item.posterUrl || "/placeholder.svg"}
             alt={item.title}
             fill
             className="object-cover transition-transform hover:scale-105"

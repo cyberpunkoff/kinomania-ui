@@ -26,9 +26,9 @@ export default function CollectionSelector({ mediaId, onClose }: CollectionSelec
     if (onClose) onClose()
   }
 
-  const handleCreateCollection = () => {
+  const handleCreateCollection = async () => {
     if (newCollectionName.trim()) {
-      const newCollectionId = createCollection(newCollectionName)
+      const newCollectionId = await createCollection(newCollectionName)
       addToCollection(mediaId, newCollectionId)
       toast({
         title: "Подборка создана",
@@ -55,7 +55,7 @@ export default function CollectionSelector({ mediaId, onClose }: CollectionSelec
             >
               {isAdded && <Check className="mr-2 h-4 w-4" />}
               {collection.name}
-              <span className="ml-auto text-xs text-muted-foreground">{collection.count} шт.</span>
+              <span className="ml-auto text-xs text-muted-foreground">{collection.items.length} шт.</span>
             </Button>
           )
         })}

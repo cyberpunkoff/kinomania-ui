@@ -1,10 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { mockMovies, mockSeries } from "@/lib/mock-data"
 import { Bell, BookmarkPlus, Check, Share } from "lucide-react"
 import {
   Dialog,
@@ -17,39 +15,93 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import CollectionSelector from "@/components/collection-selector"
-import { useState } from "react"
+import { useState, use } from "react"
 import { useCollections } from "@/lib/collections-context"
 import { toast } from "@/hooks/use-toast"
+import { useMedia } from "@/hooks/use-media"
+import { useWatchedMedia } from "@/hooks/use-user"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface MediaPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function MediaPage({ params }: MediaPageProps) {
-  const allMedia = [...mockMovies, ...mockSeries]
-  const media = allMedia.find((item) => item.id === params.id)
+  
+  const { id } = use(params)
+  const { media, loading, error } = useMedia(id)
   const { isInCollection } = useCollections()
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [isWatched, setIsWatched] = useState(false)
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const isAdded = isInCollection(params.id)
+  const { isWatched, markAsWatched, unmarkAsWatched } = useWatchedMedia()
 
-  if (!media) {
-    notFound()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+
+  if (loading) {
+    return (
+      <div className="container py-6">
+        <div className="grid gap-6 md:grid-cols-[300px_1fr] lg:gap-12">
+          <Skeleton className="h-[450px] w-[300px] rounded-lg" />
+          <div className="space-y-6">
+            <div>
+              <Skeleton className="h-10 w-2/3 mb-2" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-6 w-20 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+            <Skeleton className="h-20 w-full" />
+            <div className="flex flex-wrap gap-3">
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-40" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !media) {
+    return (
+      <div className="container py-6 text-center">
+        <p className="text-destructive text-lg">Ошибка при загрузке информации о медиа</p>
+        <p className="text-muted-foreground">{error || "Медиа не найдено"}</p>
+        <Button className="mt-4" onClick={() => window.history.back()}>
+          Вернуться назад
+        </Button>
+      </div>
+    )
   }
 
   const isMovie = media.type === "movie"
+  const watched = isWatched(media.id)
+  const isAdded = isInCollection(media.id)
 
-  const handleMarkAsWatched = () => {
-    setIsWatched(!isWatched)
-    toast({
-      title: isWatched ? "Отметка снята" : "Отмечено как просмотренное",
-      description: isWatched
-        ? `"${media.title}" больше не отмечено как просмотренное`
-        : `"${media.title}" отмечено как просмотренное`,
-    })
+  const handleMarkAsWatched = async () => {
+    try {
+      if (watched) {
+        await unmarkAsWatched(media.id)
+      } else {
+        await markAsWatched(media.id)
+      }
+
+      toast({
+        title: watched ? "Отметка снята" : "Отмечено как просмотренное",
+        description: watched
+          ? `"${media.title}" больше не отмечено как просмотренное`
+          : `"${media.title}" отмечено как просмотренное`,
+      })
+    } catch (err) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось изменить статус просмотра",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleSubscribe = () => {
@@ -75,7 +127,7 @@ export default function MediaPage({ params }: MediaPageProps) {
       <div className="grid gap-6 md:grid-cols-[300px_1fr] lg:gap-12">
         <div className="mx-auto md:mx-0">
           <div className="relative aspect-[2/3] w-[300px] overflow-hidden rounded-lg">
-            <Image src={media.poster || "/placeholder.svg"} alt={media.title} fill className="object-cover" priority />
+            <Image src={media.posterUrl || "/placeholder.svg"} alt={media.title} fill className="object-cover" priority />
           </div>
         </div>
         <div className="space-y-6">
@@ -129,9 +181,9 @@ export default function MediaPage({ params }: MediaPageProps) {
               </DialogContent>
             </Dialog>
 
-            <Button variant={isWatched ? "default" : "outline"} onClick={handleMarkAsWatched}>
+            <Button variant={watched ? "default" : "outline"} onClick={handleMarkAsWatched}>
               <Check className="mr-2 h-4 w-4" />
-              {isWatched ? "Просмотрено" : "Отметить как просмотренное"}
+              {watched ? "Просмотрено" : "Отметить как просмотренное"}
             </Button>
 
             {/* <Button variant={isSubscribed ? "default" : "outline"} onClick={handleSubscribe}>
@@ -139,10 +191,10 @@ export default function MediaPage({ params }: MediaPageProps) {
               {isSubscribed ? "Подписка оформлена" : "Подписаться"}
             </Button> */}
 
-            {/* <Button variant="outline" onClick={handleShare}>
+            <Button variant="outline" onClick={handleShare}>
               <Share className="mr-2 h-4 w-4" />
               Поделиться
-            </Button> */}
+            </Button>
           </div>
 
           <Separator />

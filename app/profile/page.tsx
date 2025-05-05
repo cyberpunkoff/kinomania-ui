@@ -16,13 +16,19 @@ import {
 import { useUser } from "@auth0/nextjs-auth0"
 import { LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ProfilePage() {
-  const router = useRouter()
   const { user, isLoading, error } = useUser()
 
-  if (isLoading) {
-    return <div>Loading...</div>
+  if (isLoading || !user) {
+    return (
+      <div className="container py-6 space-y-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <Skeleton className="h-10 w-40" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -38,7 +44,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarFallback>{user.name?.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
                   <h3 className="font-medium text-lg">{user.name}</h3>

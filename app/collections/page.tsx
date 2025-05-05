@@ -7,6 +7,8 @@ import { Film, Plus, Share, Trash } from "lucide-react"
 import { useCollections } from "@/lib/collections-context"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { useSearchParams } from 'next/navigation';
+
 import {
   Dialog,
   DialogContent,
@@ -19,7 +21,9 @@ import { toast } from "@/hooks/use-toast"
 
 export default function CollectionsPage() {
   const { collections, createCollection, deleteCollection } = useCollections()
-  const [isCreating, setIsCreating] = useState(false)
+  const searchParams = useSearchParams();
+  const shouldCreate = searchParams.get('create') === 'true';
+  const [isCreating, setIsCreating] = useState(shouldCreate)
   const [newCollectionName, setNewCollectionName] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null)
@@ -92,10 +96,10 @@ export default function CollectionsPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {collections.map((collection) => (
-          <Card key={collection.id}>
+          <Card key={collection.id} className="flex flex-col justify-between">
             <CardHeader>
               <CardTitle>{collection.name}</CardTitle>
-              <CardDescription>{collection.count} фильмов и сериалов</CardDescription>
+              <CardDescription>фильмов и сериалов: {collection.items.length}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex -space-x-4 overflow-hidden">
@@ -104,15 +108,15 @@ export default function CollectionsPage() {
                     key={item.id}
                     className="h-16 w-12 rounded border flex-shrink-0 bg-muted"
                     style={{
-                      backgroundImage: `url(${item.poster})`,
+                      backgroundImage: `url(${item.posterUrlPreview})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
                   />
                 ))}
-                {collection.count > 5 && (
+                {collection.items.length > 5 && (
                   <div className="flex h-16 w-12 items-center justify-center rounded border bg-muted text-sm font-medium">
-                    +{collection.count - 5}
+                    +{collection.items.length - 5}
                   </div>
                 )}
               </div>
@@ -178,4 +182,3 @@ export default function CollectionsPage() {
     </div>
   )
 }
-

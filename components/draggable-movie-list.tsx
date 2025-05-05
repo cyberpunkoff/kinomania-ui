@@ -19,9 +19,10 @@ import SortableMovieListItem from "./sortable-movie-list-item"
 interface DraggableMovieListProps {
   collectionId: string
   items: MediaItem[]
+  isEditing: boolean
 }
 
-export default function DraggableMovieList({ collectionId, items }: DraggableMovieListProps) {
+export default function DraggableMovieList({ collectionId, items, isEditing }: DraggableMovieListProps) {
   const { reorderCollectionItems } = useCollections()
   const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -61,10 +62,10 @@ export default function DraggableMovieList({ collectionId, items }: DraggableMov
       onDragStart={handleDragStart}
       modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
     >
-      <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext disabled={!isEditing} items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
         <div className="grid gap-4">
           {items.map((item, index) => (
-            <SortableMovieListItem key={item.id} item={item} index={index + 1} isActive={activeId === item.id} />
+            <SortableMovieListItem key={item.id} item={item} index={index + 1} isActive={activeId === item.id} isEditing={isEditing} collectionId={collectionId} />
           ))}
         </div>
       </SortableContext>

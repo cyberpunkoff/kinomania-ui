@@ -3,12 +3,20 @@ export type MediaType = "movie" | "series"
 export interface MediaItem {
   id: string
   title: string
-  poster: string
+  posterUrl: string
+  posterUrlPreview: string
   year: number
   rating: number
   type: MediaType
   genres: string[]
   description: string
+}
+
+export interface ApiCollection {
+  id: string
+  name: string
+  count: number
+  items: string[]
 }
 
 export interface Collection {
@@ -22,7 +30,7 @@ export interface User {
   id: string
   name: string
   email: string
-  collections: Collection[]
+  notificationsEnabled: boolean
 }
 
 export interface Notification {
@@ -33,4 +41,3 @@ export interface Notification {
   read: boolean
   mediaId?: string
 }
-

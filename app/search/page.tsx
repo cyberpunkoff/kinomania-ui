@@ -1,27 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, X } from "lucide-react"
 import MovieCard from "@/components/movie-card"
-import { mockMovies, mockSeries } from "@/lib/mock-data"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
-
-const allMedia = [...mockMovies, ...mockSeries]
+import { useMediaSearch } from "@/hooks/use-media"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const genres = ["Фантастика", "Приключения", "Драма", "Боевик", "Комедия", "Фэнтези", "История", "Биография", "Ужасы"]
 
 export default function SearchPage() {
+  const { results, loading, error, searchMedia } = useMediaSearch()
+
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [yearRange, setYearRange] = useState([2000, 2024])
   const [ratingRange, setRatingRange] = useState([0, 10])
   const [mediaType, setMediaType] = useState<string>("all")
   const [showFilters, setShowFilters] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
 
   const toggleGenre = (genre: string) => {
     if (selectedGenres.includes(genre)) {
@@ -38,27 +40,29 @@ export default function SearchPage() {
     setMediaType("all")
   }
 
-  const filteredMedia = allMedia.filter((item) => {
-    // Search query filter
-    const matchesSearch = searchQuery === "" || item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleSearch = async () => {
+    setIsSearching(true)
+    await searchMedia({
+      search: searchQuery,
+      type: mediaType === "all" ? undefined : mediaType,
+      genres: selectedGenres.length > 0 ? selectedGenres : undefined,
+      yearFrom: yearRange[0],
+      yearTo: yearRange[1],
+      ratingFrom: ratingRange[0],
+      ratingTo: ratingRange[1],
+    })
+    setIsSearching(false)
+  }
 
-    // Genre filter
-    const matchesGenre = selectedGenres.length === 0 || item.genres.some((genre) => selectedGenres.includes(genre))
+  useEffect(() => {
+    if (isSearching) return
 
-    // Year filter
-    const matchesYear = item.year >= yearRange[0] && item.year <= yearRange[1]
+    const timer = setTimeout(() => {
+      handleSearch()
+    }, 500)
 
-    // Rating filter
-    const matchesRating = item.rating >= ratingRange[0] && item.rating <= ratingRange[1]
-
-    // Media type filter
-    const matchesType =
-      mediaType === "all" ||
-      (mediaType === "movie" && item.type === "movie") ||
-      (mediaType === "series" && item.type === "series")
-
-    return matchesSearch && matchesGenre && matchesYear && matchesRating && matchesType
-  })
+    return () => clearTimeout(timer)
+  }, [searchQuery, selectedGenres, yearRange, ratingRange, mediaType])
 
   return (
     <div className="container py-6 space-y-6">
@@ -107,8 +111,9 @@ export default function SearchPage() {
               <div className="pt-6 px-2">
                 <Slider
                   defaultValue={yearRange}
+                  minStepsBetweenThumbs={10}
                   min={1900}
-                  max={2024}
+                  max={2025}
                   step={1}
                   value={yearRange}
                   onValueChange={setYearRange}
@@ -164,12 +169,29 @@ export default function SearchPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Результаты поиска</h2>
-          <p className="text-sm text-muted-foreground">Найдено: {filteredMedia.length}</p>
+          <p className="text-sm text-muted-foreground">{loading ? "Загрузка..." : `Найдено: ${results.length}`}</p>
         </div>
 
-        {filteredMedia.length > 0 ? (
+        {loading ? (
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filteredMedia.map((item) => (
+            {Array(8)
+              .fill(0)
+              .map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-[300px] w-full rounded-lg" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive">Ошибка при поиске</p>
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+        ) : results.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {results.map((item) => (
               <MovieCard key={item.id} item={item} />
             ))}
           </div>

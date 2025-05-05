@@ -22,17 +22,21 @@ import { toast } from "@/hooks/use-toast"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { cn } from "@/lib/utils"
+import { useWatchedMedia } from "@/hooks/use-user"
+import { Familjen_Grotesk } from "next/font/google"
 
 interface SortableMovieListItemProps {
   item: MediaItem
   index: number
   isActive: boolean
+  collectionId: string
+  isEditing: boolean
 }
 
-export default function SortableMovieListItem({ item, index, isActive }: SortableMovieListItemProps) {
+export default function SortableMovieListItem({ item, index, isActive, collectionId, isEditing }: SortableMovieListItemProps) {
   const { isInCollection, removeFromCollection } = useCollections()
+  const { isWatched, markAsWatched, unmarkAsWatched, refresh } = useWatchedMedia()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isWatched, setIsWatched] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const isAdded = isInCollection(item.id)
 
@@ -43,11 +47,16 @@ export default function SortableMovieListItem({ item, index, isActive }: Sortabl
     transition,
   }
 
-  const handleMarkAsWatched = () => {
-    setIsWatched(!isWatched)
+  const handleMarkAsWatched = async () => {
+    if (isWatched(item.id)) {
+      unmarkAsWatched(item.id)
+    } else {
+      markAsWatched(item.id)
+    }
+
     toast({
-      title: isWatched ? "Отметка снята" : "Отмечено как просмотренное",
-      description: isWatched
+      title: isWatched(item.id) ? "Отметка снята" : "Отмечено как просмотренное",
+      description: isWatched(item.id)
         ? `"${item.title}" больше не отмечено как просмотренное`
         : `"${item.title}" отмечено как просмотренное`,
     })
@@ -64,9 +73,6 @@ export default function SortableMovieListItem({ item, index, isActive }: Sortabl
   }
 
   const handleRemoveFromCollection = () => {
-    // Здесь нужно получить ID коллекции из контекста или пропсов
-    // Для примера используем первую коллекцию, в которой есть этот элемент
-    const collectionId = "watchlist" // В реальном приложении это должно быть динамическим
     removeFromCollection(item.id, collectionId)
     toast({
       title: "Удалено из подборки",
@@ -78,21 +84,23 @@ export default function SortableMovieListItem({ item, index, isActive }: Sortabl
     <Card ref={setNodeRef} style={style} className={cn("overflow-hidden", isActive && "z-10 shadow-lg")}>
       <div className="flex flex-col sm:flex-row">
         <div className="flex items-center">
-          <div
-            className="flex items-center justify-center px-4 cursor-grab active:cursor-grabbing"
-            {...attributes}
-            {...listeners}
-          >
-            <GripVertical className="h-6 w-6 text-muted-foreground" />
-          </div>
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm mr-2">
+          {isEditing && (
+            <div
+              className="flex items-center justify-center px-4 cursor-grab active:cursor-grabbing"
+              {...attributes}
+              {...listeners}
+            >
+              <GripVertical className="h-6 w-6 text-muted-foreground" />
+            </div>
+          )}
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm m-3">
             {index}
           </div>
         </div>
         <Link href={`/media/${item.id}`} className="sm:w-[150px] md:w-[180px]">
           <div className="relative aspect-[2/3] w-full overflow-hidden">
             <Image
-              src={item.poster || "/placeholder.svg"}
+              src={item.posterUrl || "/placeholder.svg"}
               alt={item.title}
               fill
               className="object-cover transition-transform hover:scale-105"
@@ -143,15 +151,15 @@ export default function SortableMovieListItem({ item, index, isActive }: Sortabl
               </DialogContent>
             </Dialog>
 
-            <Button variant={isWatched ? "default" : "outline"} size="sm" onClick={handleMarkAsWatched}>
+            <Button variant={isWatched(item.id) ? "default" : "outline"} size="sm" onClick={handleMarkAsWatched}>
               <Check className="mr-2 h-4 w-4" />
-              {isWatched ? "Просмотрено" : "Отметить как просмотренное"}
+              {isWatched(item.id) ? "Просмотрено" : "Отметить как просмотренное"}
             </Button>
 
-            <Button variant={isSubscribed ? "default" : "outline"} size="sm" onClick={handleSubscribe}>
+            {/* <Button variant={isSubscribed ? "default" : "outline"} size="sm" onClick={handleSubscribe}>
               <Bell className="mr-2 h-4 w-4" />
               {isSubscribed ? "Подписка оформлена" : "Подписаться"}
-            </Button>
+            </Button> */}
 
             <Button variant="outline" size="sm" onClick={handleRemoveFromCollection}>
               <Trash className="mr-2 h-4 w-4" />

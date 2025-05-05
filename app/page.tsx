@@ -3,8 +3,9 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Search } from "lucide-react"
 import Link from "next/link"
-import MovieCard from "@/components/movie-card"
-import { mockMovies, mockSeries } from "@/lib/mock-data"
+import CollectionsList from "@/components/collections-list"
+import PopularMediaList from "@/components/popular-media-list"
+import NewMediaList from "@/components/new-media-list"
 
 export default function Home() {
   return (
@@ -26,53 +27,13 @@ export default function Home() {
           <TabsTrigger value="new">Новинки</TabsTrigger>
         </TabsList>
         <TabsContent value="collections" className="pt-4">
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Мои подборки</h2>
-              <Button variant="outline" asChild>
-                <Link href="/collections">Все подборки</Link>
-              </Button>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Link href="/collections/watchlist" className="group">
-                <div className="rounded-lg border p-4 transition-colors hover:bg-accent">
-                  <h3 className="font-medium">Хочу посмотреть</h3>
-                  <p className="text-sm text-muted-foreground">12 фильмов и сериалов</p>
-                </div>
-              </Link>
-              <Link href="/collections/favorites" className="group">
-                <div className="rounded-lg border p-4 transition-colors hover:bg-accent">
-                  <h3 className="font-medium">Избранное</h3>
-                  <p className="text-sm text-muted-foreground">8 фильмов и сериалов</p>
-                </div>
-              </Link>
-              <Link href="/collections/new" className="group">
-                <div className="rounded-lg border border-dashed p-4 text-center text-muted-foreground transition-colors hover:bg-accent">
-                  <p>+ Создать новую подборку</p>
-                </div>
-              </Link>
-            </div>
-          </div>
+          <CollectionsList />
         </TabsContent>
         <TabsContent value="popular" className="pt-4">
-          <div className="grid gap-4">
-            <h2 className="text-xl font-semibold">Популярное</h2>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {mockMovies.slice(0, 4).map((movie) => (
-                <MovieCard key={movie.id} item={movie} />
-              ))}
-            </div>
-          </div>
+          <PopularMediaList />
         </TabsContent>
         <TabsContent value="new" className="pt-4">
-          <div className="grid gap-4">
-            <h2 className="text-xl font-semibold">Новинки</h2>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {mockSeries.slice(0, 4).map((series) => (
-                <MovieCard key={series.id} item={series} />
-              ))}
-            </div>
-          </div>
+          <NewMediaList />
         </TabsContent>
       </Tabs>
     </div>

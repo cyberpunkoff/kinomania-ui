@@ -57,7 +57,7 @@ export default function MovieCard({ item }: MovieCardProps) {
       <CardFooter className="p-4 pt-0">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="w-full" disabled={isAdded}>
+            <Button variant="outline" size="sm" className="w-full">
               {isAdded ? (
                 <>
                   <Check className="mr-2 h-4 w-4" />

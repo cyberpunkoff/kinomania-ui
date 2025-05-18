@@ -77,7 +77,7 @@ export default function MediaPage({ params }: MediaPageProps) {
     )
   }
 
-  const isMovie = media.type === "movie"
+  const isMovie = true // temporaty disabled media.type === "movie"
   const watched = isWatched(media.id)
   const isAdded = isInCollection(media.id)
 
@@ -191,10 +191,10 @@ export default function MediaPage({ params }: MediaPageProps) {
               {isSubscribed ? "Подписка оформлена" : "Подписаться"}
             </Button> */}
 
-            <Button variant="outline" onClick={handleShare}>
+            {/* <Button variant="outline" onClick={handleShare}>
               <Share className="mr-2 h-4 w-4" />
               Поделиться
-            </Button>
+            </Button> */}
           </div>
 
           <Separator />

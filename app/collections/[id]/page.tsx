@@ -139,10 +139,10 @@ export default function CollectionPage({ params }: CollectionPageProps) {
               </>
             )}
           </Button>
-          <Button variant="outline" onClick={handleShare}>
+          {/* <Button variant="outline" onClick={handleShare}>
             <Share className="mr-2 h-4 w-4" />
             Поделиться
-          </Button>
+          </Button> */}
           <Button variant="outline" onClick={() => {
                     setCollectionToDelete(collection.id)
                     setDeleteDialogOpen(true)

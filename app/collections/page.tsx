@@ -129,9 +129,9 @@ export default function CollectionsPage() {
                 </Link>
               </Button>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={() => handleShare(collection.id)}>
+                {/* <Button variant="outline" size="icon" onClick={() => handleShare(collection.id)}>
                   <Share className="h-4 w-4" />
-                </Button>
+                </Button> */}
                 <Button
                   variant="outline"
                   size="icon"

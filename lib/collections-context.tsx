@@ -26,9 +26,9 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Преобразование ApiCollection в Collection с полными объектами MediaItem
+  // маппим ApiCollection во внутренний формат Collection
   const transformApiCollections = async (apiCollections: ApiCollection[]): Promise<Collection[]> => {
-    // Собираем все уникальные ID медиа из всех коллекций
+    // собираем все уникальные ID медиа из всех коллекций
     const allMediaIds = Array.from(new Set(apiCollections.flatMap((collection) => collection.items)))
     console.log(allMediaIds)
     // Если нет медиа, возвращаем коллекции с пустыми массивами items
@@ -39,18 +39,14 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
       }))
     }
 
-    // Загружаем все медиа за один запрос
     const mediaItems = await mediaAPI.getByIds(allMediaIds)
 
-    // Создаем Map для быстрого доступа к медиа по ID
     const mediaMap = new Map<string, MediaItem>()
     mediaItems.forEach((item) => {
       mediaMap.set(item.id, item)
     })
 
-    // Преобразуем каждую коллекцию
     return apiCollections.map((apiCollection) => {
-      // Преобразуем массив ID в массив объектов MediaItem
       const items = apiCollection.items.map((id) => mediaMap.get(id)).filter((item): item is MediaItem => !!item)
 
       return {
@@ -60,16 +56,13 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  // Загрузка коллекций при инициализации
   const fetchCollections = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      // Получаем коллекции из API (с массивами ID медиа)
       const apiCollections = await collectionsAPI.getAll()
 
-      // Преобразуем в коллекции с полными объектами MediaItem
       const transformedCollections = await transformApiCollections(apiCollections)
 
       setCollections(transformedCollections)
@@ -98,7 +91,6 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
     try {
       await collectionsAPI.addItem(collectionId, mediaId)
 
-      // Получаем информацию о медиа
       const mediaItem = await mediaAPI.getById(mediaId)
 
       // Обновляем локальное состояние
@@ -129,7 +121,6 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
     try {
       await collectionsAPI.removeItem(collectionId, mediaId)
 
-      // Обновляем локальное состояние
       setCollections((prevCollections) => {
         return prevCollections.map((collection) => {
           if (collection.id === collectionId) {
@@ -160,10 +151,9 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
       // Преобразуем ApiCollection в Collection
       const newCollection: Collection = {
         ...apiCollection,
-        items: [], // Новая коллекция не содержит элементов
+        items: [],
       }
 
-      // Обновляем локальное состояние
       setCollections((prevCollections) => [...prevCollections, newCollection])
 
       return newCollection.id
@@ -182,7 +172,6 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
     try {
       await collectionsAPI.delete(id)
 
-      // Обновляем локальное состояние
       setCollections((prevCollections) => prevCollections.filter((collection) => collection.id !== id))
     } catch (err) {
       console.error("Failed to delete collection:", err)
@@ -213,19 +202,17 @@ export function CollectionsProvider({ children }: { children: ReactNode }) {
 
   const isInCollection = (mediaId: string, collectionId?: string) => {
     if (collectionId) {
-      // Проверяем, есть ли медиа-элемент в конкретной коллекции
+      // Проверяем есть ли элемент в этой коллекции
       const collection = collections.find((c) => c.id === collectionId)
       return collection ? collection.items.some((item) => item.id === mediaId) : false
     } else {
-      // Проверяем, есть ли медиа-элемент в любой коллекции
+      // если нет, то проверям есть ли элемент в любой коллекции
       return collections.some((collection) => collection.items.some((item) => item.id === mediaId))
     }
   }
 
   const reorderCollectionItems = async (collectionId: string, startIndex: number, endIndex: number) => {
     try {
-      // Обновляем локальное состояние
-
       const prevCollections = collections;
       const newCollections = prevCollections.map((collection) => {
           if (collection.id === collectionId) {

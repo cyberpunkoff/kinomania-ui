@@ -20,7 +20,7 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
   })
 
   if (!response.ok) {
-    // Обработка ошибок API
+    // Error handler
     const error = await response.json().catch(() => ({}))
     throw new Error(error.message || `API error: ${response.status}`)
   }
@@ -34,7 +34,6 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
 
 // API для работы с медиа
 export const mediaAPI = {
-  // Получение списка медиа с возможностью фильтрации
   getAll: async (params?: {
     search?: string
     type?: string
@@ -58,7 +57,6 @@ export const mediaAPI = {
     return fetchAPI<MediaItem[]>(`/media${query}`)
   },
 
-  // Получение конкретного медиа по ID
   getById: async (id: string) => {
     return fetchAPI<MediaItem>(`/media/${id}`)
   },
@@ -68,12 +66,10 @@ export const mediaAPI = {
     return fetchAPI<MediaItem[]>(`/media/batch?ids=${ids.join(",")}`)
   },
 
-  // Получение популярных медиа
   getPopular: async () => {
     return fetchAPI<MediaItem[]>("/media/popular")
   },
 
-  // Получение новинок
   getNew: async () => {
     return fetchAPI<MediaItem[]>("/media/new")
   },
@@ -81,17 +77,14 @@ export const mediaAPI = {
 
 // API для работы с коллекциями
 export const collectionsAPI = {
-  // Получение всех коллекций пользователя
   getAll: async () => {
     return fetchAPI<ApiCollection[]>("/collections")
   },
 
-  // Получение конкретной коллекции по ID
   getById: async (id: string) => {
     return fetchAPI<ApiCollection>(`/collections/${id}`)
   },
 
-  // Создание новой коллекции
   create: async (name: string) => {
     return fetchAPI<ApiCollection>("/collections", {
       method: "POST",
@@ -99,7 +92,6 @@ export const collectionsAPI = {
     })
   },
 
-  // Обновление коллекции
   update: async (id: string, data: { name?: string }) => {
     return fetchAPI<ApiCollection>(`/collections/${id}`, {
       method: "PUT",
@@ -107,14 +99,12 @@ export const collectionsAPI = {
     })
   },
 
-  // Удаление коллекции
   delete: async (id: string) => {
     return fetchAPI<void>(`/collections/${id}`, {
       method: "DELETE",
     })
   },
 
-  // Добавление медиа в коллекцию
   addItem: async (collectionId: string, mediaId: string) => {
     return fetchAPI<{ success: boolean }>(`/collections/${collectionId}/items`, {
       method: "POST",
@@ -122,14 +112,12 @@ export const collectionsAPI = {
     })
   },
 
-  // Удаление медиа из коллекции
   removeItem: async (collectionId: string, mediaId: string) => {
     return fetchAPI<void>(`/collections/${collectionId}/items/${mediaId}`, {
       method: "DELETE",
     })
   },
 
-  // Изменение порядка элементов в коллекции
   reorderItems: async (collectionId: string, itemIds: string[]) => {
     return fetchAPI<{ success: boolean }>(`/collections/${collectionId}/items/reorder`, {
       method: "PUT",
@@ -138,20 +126,18 @@ export const collectionsAPI = {
   },
 }
 
+// API пользователя (списки просмотренного)
 export const userAPI = {
-  // Получение списка просмотренных медиа
   getWatched: async () => {
     return fetchAPI<string[]>("/user/watched")
   },
 
-  // Отметить медиа как просмотренное
   markAsWatched: async (mediaId: string) => {
     return fetchAPI<{ success: boolean }>(`/user/watched/${mediaId}`, {
       method: "POST",
     })
   },
 
-  // Убрать отметку о просмотре
   unmarkAsWatched: async (mediaId: string) => {
     return fetchAPI<{ success: boolean }>(`/user/watched/${mediaId}`, {
       method: "DELETE",

@@ -115,7 +115,7 @@ export default function MediaPage({ params }: MediaPageProps) {
   }
 
   const handleShare = () => {
-    // В реальном приложении здесь был бы код для копирования ссылки
+    // TODO: доработать функционал шеринга
     toast({
       title: "Ссылка скопирована",
       description: "Ссылка на медиа скопирована в буфер обмена",

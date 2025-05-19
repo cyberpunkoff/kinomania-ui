@@ -54,12 +54,12 @@ export default function SortableMovieListItem({ item, index, isActive, collectio
       markAsWatched(item.id)
     }
 
-    toast({
-      title: isWatched(item.id) ? "Отметка снята" : "Отмечено как просмотренное",
-      description: isWatched(item.id)
-        ? `"${item.title}" больше не отмечено как просмотренное`
-        : `"${item.title}" отмечено как просмотренное`,
-    })
+    // toast({
+    //   title: isWatched(item.id) ? "Отметка снята" : "Отмечено как просмотренное",
+    //   description: isWatched(item.id)
+    //     ? `"${item.title}" больше не отмечено как просмотренное`
+    //     : `"${item.title}" отмечено как просмотренное`,
+    // })
   }
 
   const handleSubscribe = () => {
@@ -74,10 +74,10 @@ export default function SortableMovieListItem({ item, index, isActive, collectio
 
   const handleRemoveFromCollection = () => {
     removeFromCollection(item.id, collectionId)
-    toast({
-      title: "Удалено из подборки",
-      description: `"${item.title}" удалено из подборки`,
-    })
+    // toast({
+    //   title: "Удалено из подборки",
+    //   description: `"${item.title}" удалено из подборки`,
+    // })
   }
 
   return (

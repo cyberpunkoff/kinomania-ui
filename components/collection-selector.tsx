@@ -19,10 +19,10 @@ export default function CollectionSelector({ mediaId, onClose }: CollectionSelec
 
   const handleAddToCollection = (collectionId: string) => {
     addToCollection(mediaId, collectionId)
-    toast({
-      title: "Добавлено в подборку",
-      description: "Медиа успешно добавлено в подборку",
-    })
+    //toast({
+    //  title: "Добавлено в подборку",
+    //  description: "Медиа успешно добавлено в подборку",
+    //})
     if (onClose) onClose()
   }
 
@@ -30,10 +30,10 @@ export default function CollectionSelector({ mediaId, onClose }: CollectionSelec
     if (newCollectionName.trim()) {
       const newCollectionId = await createCollection(newCollectionName)
       addToCollection(mediaId, newCollectionId)
-      toast({
-        title: "Подборка создана",
-        description: `Подборка "${newCollectionName}" создана и медиа добавлено`,
-      })
+      // toast({
+      //   title: "Подборка создана",
+      //   description: `Подборка "${newCollectionName}" создана и медиа добавлено`,
+      // })
       setNewCollectionName("")
       setIsCreating(false)
       if (onClose) onClose()

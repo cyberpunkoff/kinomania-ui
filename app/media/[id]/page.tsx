@@ -89,12 +89,12 @@ export default function MediaPage({ params }: MediaPageProps) {
         await markAsWatched(media.id)
       }
 
-      toast({
-        title: watched ? "Отметка снята" : "Отмечено как просмотренное",
-        description: watched
-          ? `"${media.title}" больше не отмечено как просмотренное`
-          : `"${media.title}" отмечено как просмотренное`,
-      })
+      // toast({
+      //   title: watched ? "Отметка снята" : "Отмечено как просмотренное",
+      //   description: watched
+      //     ? `"${media.title}" больше не отмечено как просмотренное`
+      //     : `"${media.title}" отмечено как просмотренное`,
+      // })
     } catch (err) {
       toast({
         title: "Ошибка",
@@ -106,19 +106,20 @@ export default function MediaPage({ params }: MediaPageProps) {
 
   const handleSubscribe = () => {
     setIsSubscribed(!isSubscribed)
-    toast({
-      title: isSubscribed ? "Подписка отменена" : "Подписка оформлена",
-      description: isSubscribed
-        ? `Вы больше не будете получать уведомления о "${media.title}"`
-        : `Вы будете получать уведомления о новых сериях "${media.title}"`,
-    })
+    // toast({
+    //   title: isSubscribed ? "Подписка отменена" : "Подписка оформлена",
+    //   description: isSubscribed
+    //     ? `Вы больше не будете получать уведомления о "${media.title}"`
+    //     : `Вы будете получать уведомления о новых сериях "${media.title}"`,
+    // })
   }
 
   const handleShare = () => {
-    // TODO: доработать функционал шеринга
+    const url = window.location.href
+    navigator.clipboard.writeText(url)
     toast({
       title: "Ссылка скопирована",
-      description: "Ссылка на медиа скопирована в буфер обмена",
+      description: "Ссылка на медиа скопирована в буфер обмена. Теперь ей можно поделиться.",
     })
   }
 
@@ -191,10 +192,10 @@ export default function MediaPage({ params }: MediaPageProps) {
               {isSubscribed ? "Подписка оформлена" : "Подписаться"}
             </Button> */}
 
-            {/* <Button variant="outline" onClick={handleShare}>
+            <Button variant="outline" onClick={handleShare}>
               <Share className="mr-2 h-4 w-4" />
               Поделиться
-            </Button> */}
+            </Button>
           </div>
 
           <Separator />

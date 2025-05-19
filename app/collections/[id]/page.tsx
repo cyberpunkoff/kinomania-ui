@@ -42,10 +42,10 @@ export default function CollectionPage({ params }: CollectionPageProps) {
       setCollectionToDelete(null)
       setDeleteDialogOpen(false)
       router.push("/collections")
-      toast({
-        title: "Подборка удалена",
-        description: `Подборка "${collectionName}" успешно удалена`,
-      })
+      // toast({
+      //   title: "Подборка удалена",
+      //   description: `Подборка "${collectionName}" успешно удалена`,
+      // })
     }
   }
 
@@ -98,9 +98,11 @@ export default function CollectionPage({ params }: CollectionPageProps) {
   }
 
   const handleShare = () => {
+    const url = window.location.href
+    navigator.clipboard.writeText(url)
     toast({
       title: "Ссылка скопирована",
-      description: `Ссылка на подборку "${collection.name}" скопирована в буфер обмена`,
+      description: `Ссылка на подборку "${collection.name}" скопирована в буфер обмена. Теперь ей можно поделиться.`,
     })
   }
 
@@ -139,10 +141,10 @@ export default function CollectionPage({ params }: CollectionPageProps) {
               </>
             )}
           </Button>
-          {/* <Button variant="outline" onClick={handleShare}>
+          <Button variant="outline" onClick={handleShare}>
             <Share className="mr-2 h-4 w-4" />
             Поделиться
-          </Button> */}
+          </Button>
           <Button variant="outline" onClick={() => {
                     setCollectionToDelete(collection.id)
                     setDeleteDialogOpen(true)

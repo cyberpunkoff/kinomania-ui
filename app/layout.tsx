@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navigation from "@/components/navigation"
 import { CollectionsProvider } from "@/lib/collections-context"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
               <Navigation />
               <main className="flex-1">{children}</main>
             </div>
+          <Toaster /> 
           </CollectionsProvider>
         </ThemeProvider>
       </body>

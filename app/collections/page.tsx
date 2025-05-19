@@ -33,10 +33,10 @@ export default function CollectionsPage() {
       createCollection(newCollectionName)
       setNewCollectionName("")
       setIsCreating(false)
-      toast({
-        title: "Подборка создана",
-        description: `Подборка "${newCollectionName}" успешно создана`,
-      })
+      // toast({
+      //   title: "Подборка создана",
+      //   description: `Подборка "${newCollectionName}" успешно создана`,
+      // })
     }
   }
 
@@ -46,18 +46,20 @@ export default function CollectionsPage() {
       deleteCollection(collectionToDelete)
       setCollectionToDelete(null)
       setDeleteDialogOpen(false)
-      toast({
-        title: "Подборка удалена",
-        description: `Подборка "${collectionName}" успешно удалена`,
-      })
+      // toast({
+      //   title: "Подборка удалена",
+      //   description: `Подборка "${collectionName}" успешно удалена`,
+      // })
     }
   }
 
   const handleShare = (collectionId: string) => {
     const collectionName = collections.find((c) => c.id === collectionId)?.name || ""
+    const url = `${window.location.origin}/collections/${collectionId}`
+    navigator.clipboard.writeText(url)
     toast({
       title: "Ссылка скопирована",
-      description: `Ссылка на подборку "${collectionName}" скопирована в буфер обмена`,
+      description: `Ссылка на подборку "${collectionName}" скопирована в буфер обмена. Теперь ей можно поделиться.`,
     })
   }
 
@@ -129,9 +131,9 @@ export default function CollectionsPage() {
                 </Link>
               </Button>
               <div className="flex gap-2">
-                {/* <Button variant="outline" size="icon" onClick={() => handleShare(collection.id)}>
+                <Button variant="outline" size="icon" onClick={() => handleShare(collection.id)}>
                   <Share className="h-4 w-4" />
-                </Button> */}
+                </Button>
                 <Button
                   variant="outline"
                   size="icon"

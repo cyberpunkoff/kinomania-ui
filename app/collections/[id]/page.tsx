@@ -14,10 +14,12 @@ import { Edit, Save, Share, Trash } from "lucide-react"
 import { useCollections } from "@/lib/collections-context"
 import DraggableMovieList from "@/components/draggable-movie-list"
 import { toast } from "@/hooks/use-toast"
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation'
+import { collectionsAPI, mediaAPI } from "@/lib/api"
+import { ApiCollection, Collection, MediaItem } from "@/lib/types"
 
 interface CollectionPageProps {
   params: Promise<{
@@ -28,12 +30,56 @@ interface CollectionPageProps {
 export default function CollectionPage({ params }: CollectionPageProps) {
   const { collections, loading, createCollection, deleteCollection, renameCollection } = useCollections()
   const [isEditing, setIsEditing] = useState(false)
+  const [isFetched, setIsFetched] = useState(false)
   const [editedName, setEditedName] = useState("")
   const { id } = use(params); 
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const collection = collections.find((collection) => collection.id === id)
+  let [collection, setCollection] = useState(collections.find((collection) => collection.id === id))
   const router = useRouter()
+
+  const transformApiCollections = async (apiCollections: ApiCollection[]): Promise<Collection[]> => {
+    // собираем все уникальные ID медиа из всех коллекций
+    const allMediaIds = Array.from(new Set(apiCollections.flatMap((collection) => collection.items)))
+    console.log(allMediaIds)
+    // Если нет медиа, возвращаем коллекции с пустыми массивами items
+    if (allMediaIds.length === 0) {
+      return apiCollections.map((collection) => ({
+        ...collection,
+        items: [],
+      }))
+    }
+
+    const mediaItems = await mediaAPI.getByIds(allMediaIds)
+
+    const mediaMap = new Map<string, MediaItem>()
+    mediaItems.forEach((item) => {
+      mediaMap.set(item.id, item)
+    })
+
+    return apiCollections.map((apiCollection) => {
+      const items = apiCollection.items.map((id) => mediaMap.get(id)).filter((item): item is MediaItem => !!item)
+
+      return {
+        ...apiCollection,
+        items,
+      }
+    })
+  }
+
+  useEffect(() => {
+    async function fetchCollection() {
+      try {
+        if (!collection) {
+          setCollection((await transformApiCollections([await collectionsAPI.getById(id)]))[0]);
+        }
+        console.log(collection)
+      } finally {
+        setIsFetched(true)
+      }
+    }
+    fetchCollection()
+  }, [])
 
   const handleDeleteCollection = () => {
     if (collectionToDelete) {
@@ -49,7 +95,7 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     }
   }
 
-  if (loading) {
+  if (loading || !isFetched) {
     return (
       <div className="container py-6">
         <div className="grid gap-6 md:grid-cols-[300px_1fr] lg:gap-12">
